@@ -28,6 +28,25 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/*
 
+###############################################
+# add extra apps on top of ERPNext
+# -
+# bench get-app builds each app's assets, so they
+# end up in built_sites below and are picked up by
+# the runtime entrypoint. The apps are installed on
+# the site at first boot by railway-cmd.sh.
+###############################################
+
+USER frappe
+
+ARG HRMS_BRANCH=version-16
+ARG CRM_BRANCH=main
+
+RUN bench get-app --branch=${HRMS_BRANCH} https://github.com/frappe/hrms \
+    && bench get-app --branch=${CRM_BRANCH} https://github.com/frappe/crm
+
+USER root
+
 # copy built_sites from sites
 RUN mkdir -p /home/frappe/frappe-bench/built_sites \
     && cp -r /home/frappe/frappe-bench/sites/assets /home/frappe/frappe-bench/built_sites/assets \

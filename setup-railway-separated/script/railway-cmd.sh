@@ -13,6 +13,16 @@ if [ ! -f "$SITE_CONFIG" ]; then
     /home/frappe/frappe-bench/railway-setup.sh
 fi
 
+echo "-> Installing apps missing from the site"
+INSTALLED_APPS=$(su frappe -c "bench --site ${RFP_DOMAIN_NAME} list-apps" | awk 'NF {print $1}')
+for APP in $(cat /home/frappe/frappe-bench/sites/apps.txt); do
+    if grep -qx "${APP}" <<<"${INSTALLED_APPS}"; then
+        continue
+    fi
+    echo "-> Installing ${APP}"
+    su frappe -c "bench --site ${RFP_DOMAIN_NAME} install-app ${APP}"
+done
+
 echo "-> Clearing cache"
 su frappe -c "bench execute frappe.cache_manager.clear_global_cache"
 

@@ -43,6 +43,14 @@ By deploying ERPNext on Railway, you are one step closer to supporting a complet
 
 ## FAQ / Limitation
 
+**Q:** Which apps are installed?
+
+**A:** The image bundles `frappe/hrms` (Frappe HR) and `frappe/crm` on top of `erpnext`, both fetched at image build time with assets pre-compiled. On every container start, `railway-cmd.sh` installs any app listed in `sites/apps.txt` that the site does not have yet, so an existing volume picks the new apps up on the first deploy of this image — no manual `bench install-app` needed.
+
+Branches are build args (`HRMS_BRANCH`, `CRM_BRANCH`) in [`Dockerfile`](Dockerfile).
+
+--
+
 **Q:** What is `administrator` password?
 
 **A:** Admin password can be found from `RFP_SITE_ADMIN_PASSWORD` variable on `erpnext-docker` container.
